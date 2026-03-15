@@ -17,7 +17,7 @@ A single-page reference for setting up and customizing [MangoHud](https://github
 Hosted via GitHub Pages:
 
 ```
-https://<username>.github.io/<repo-name>/
+[https://<username>.github.io/<repo-name>/](https://undeadbulwark.github.io/MangoHud-Guide/
 ```
 
 ## Deploy
