@@ -14,30 +14,11 @@ A single-page reference for setting up and customizing [MangoHud](https://github
 
 ## Live Site
 
-Hosted via GitHub Pages:
-
-```
-https://undeadbulwark.github.io/MangoHud-Guide/
-```
-
-## Deploy
-
-1. Fork or clone this repo.
-2. Go to **Settings > Pages**.
-3. Set source to `main` branch, root directory.
-4. The site goes live at the URL above within a minute or two.
-
-No build step. No dependencies. Just a single `index.html`.
+[https://undeadbulwark.github.io/MangoHud-Guide/](https://undeadbulwark.github.io/MangoHud-Guide/)
 
 ## Local Preview
 
 Open `index.html` in a browser. That's it.
-
-## Stack
-
-- HTML + CSS + vanilla JS
-- [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono) and [Outfit](https://fonts.google.com/specimen/Outfit) via Google Fonts
-- Zero frameworks, zero build tools
 
 ## License
 
