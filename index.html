@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MangoHud Configuration Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0c0e13;
+      --bg-surface: #12151c;
+      --bg-elevated: #1a1e28;
+      --bg-code: #0a0c10;
+      --border: #2a2f3d;
+      --border-bright: #3a4050;
+      --text: #c8cdd8;
+      --text-dim: #6b7280;
+      --text-bright: #e8ecf4;
+      --accent: #3bdf7c;
+      --accent-dim: #2a9e59;
+      --accent-glow: rgba(59, 223, 124, 0.12);
+      --orange: #f0883e;
+      --blue: #58a6ff;
+      --red: #f47067;
+      --purple: #bc8cff;
+      --yellow: #e3b341;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    /* Scanline overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.03) 2px,
+        rgba(0, 0, 0, 0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+    a:hover { color: var(--text-bright); }
+
+    /* ── HEADER ── */
+    .site-header {
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-surface);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.75rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .logo .caret {
+      display: inline-block;
+      width: 8px;
+      height: 18px;
+      background: var(--accent);
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .header-nav { display: flex; gap: 1.5rem; align-items: center; }
+    .header-nav a {
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .header-nav a:hover { color: var(--accent); }
+
+    /* ── HERO ── */
+    .hero {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 5rem 2rem 3rem;
+      position: relative;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -100px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, var(--accent-glow), transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+    }
+
+    .hero h1 span { color: var(--accent); }
+
+    .hero-sub {
+      font-size: 1.15rem;
+      color: var(--text-dim);
+      max-width: 560px;
+      margin-bottom: 2rem;
+    }
+
+    .badge-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-dim);
+    }
+
+    .badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .badge .dot.green { background: var(--accent); }
+    .badge .dot.orange { background: var(--orange); }
+    .badge .dot.blue { background: var(--blue); }
+
+    /* ── LAYOUT ── */
+    .page-layout {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 2rem 6rem;
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 3rem;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      position: sticky;
+      top: 80px;
+      align-self: start;
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+    }
+
+    .sidebar-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-bottom: 0.75rem;
+    }
+
+    .sidebar ul { list-style: none; }
+
+    .sidebar li a {
+      display: block;
+      padding: 0.3rem 0;
+      padding-left: 0.75rem;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      border-left: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .sidebar li a:hover,
+    .sidebar li a.active {
+      color: var(--accent);
+      border-left-color: var(--accent);
+    }
+
+    /* ── CONTENT ── */
+    .content { min-width: 0; }
+
+    .section {
+      margin-bottom: 3.5rem;
+      scroll-margin-top: 80px;
+    }
+
+    .section h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      letter-spacing: -0.02em;
+    }
+
+    .section h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-bright);
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .section p {
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    /* ── CALLOUT BOX ── */
+    .callout {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+      font-size: 0.92rem;
+    }
+
+    .callout.warning { border-left-color: var(--orange); }
+
+    .callout-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 0.35rem;
+    }
+
+    .callout.warning .callout-label { color: var(--orange); }
+
+    /* ── CODE BLOCKS ── */
+    pre {
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+      position: relative;
+    }
+
+    pre code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.65;
+      color: var(--text);
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85em;
+      background: var(--bg-elevated);
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+      color: var(--orange);
+    }
+
+    pre code { background: none; padding: 0; color: var(--text); }
+
+    .code-label {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: var(--bg-elevated);
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 0 6px 0 6px;
+      border-bottom: 1px solid var(--border);
+      border-left: 1px solid var(--border);
+    }
+
+    /* Syntax colors in code */
+    .hl-comment { color: var(--text-dim); }
+    .hl-param { color: var(--blue); }
+    .hl-value { color: var(--accent); }
+    .hl-key { color: var(--orange); }
+
+    /* ── TABLES ── */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 1rem 0;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    thead { background: var(--bg-elevated); }
+
+    th {
+      text-align: left;
+      padding: 0.6rem 1rem;
+      font-weight: 600;
+      color: var(--text-bright);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 0.55rem 1rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tbody tr:hover { background: rgba(59, 223, 124, 0.03); }
+
+    td code {
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
+
+    /* ── CUSTOM THEME CARD ── */
+    .theme-card {
+      background: linear-gradient(135deg, var(--bg-elevated), var(--bg-surface));
+      border: 1px solid var(--border-bright);
+      border-radius: 10px;
+      padding: 1.75rem 2rem;
+      margin: 1.5rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .theme-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--blue), var(--purple));
+    }
+
+    .theme-card h3 {
+      margin-top: 0;
+      font-size: 1.15rem;
+      color: var(--text-bright);
+    }
+
+    .theme-card p {
+      color: var(--text-dim);
+      font-size: 0.92rem;
+    }
+
+    .theme-card .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.55rem 1.25rem;
+      background: var(--accent);
+      color: var(--bg);
+      font-weight: 600;
+      font-size: 0.88rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+      margin-top: 0.5rem;
+    }
+
+    .theme-card .btn:hover {
+      background: var(--text-bright);
+      color: var(--bg);
+      transform: translateY(-1px);
+    }
+
+    .theme-card .btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ── FOOTER ── */
+    .site-footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.82rem;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .page-layout {
+        grid-template-columns: 1fr;
+        padding: 0 1.25rem 4rem;
+      }
+      .sidebar { display: none; }
+      .hero h1 { font-size: 2.2rem; }
+      .hero { padding: 3rem 1.25rem 2rem; }
+      .header-inner { padding: 0.75rem 1.25rem; }
+      .header-nav { gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">mangohud<span class="caret"></span></div>
+      <nav class="header-nav">
+        <a href="#config">Config</a>
+        <a href="#parameters">Parameters</a>
+        <a href="#examples">Examples</a>
+        <a href="#custom-theme">Theme</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="hero">
+    <h1>MangoHud<br><span>Config Guide</span></h1>
+    <p class="hero-sub">Everything you need to set up, customize, and get the most out of MangoHud's performance overlay on Linux.</p>
+    <div class="badge-row">
+      <span class="badge"><span class="dot green"></span> Vulkan</span>
+      <span class="badge"><span class="dot orange"></span> OpenGL</span>
+      <span class="badge"><span class="dot blue"></span> Gamescope</span>
+    </div>
+  </div>
+
+  <div class="page-layout">
+    <aside class="sidebar">
+      <div class="sidebar-label">Sections</div>
+      <ul>
+        <li><a href="#config">Config File</a></li>
+        <li><a href="#syntax">Syntax</a></li>
+        <li><a href="#starter">Starter Config</a></li>
+        <li><a href="#display">Display</a></li>
+        <li><a href="#metrics">Metrics</a></li>
+        <li><a href="#keybinds">Keybinds</a></li>
+        <li><a href="#fps-limit">FPS Limiting</a></li>
+        <li><a href="#logging">Logging</a></li>
+        <li><a href="#examples">Examples</a></li>
+        <li><a href="#custom-theme">Custom Theme</a></li>
+        <li><a href="#troubleshooting">Troubleshooting</a></li>
+        <li><a href="#reference">Reference</a></li>
+      </ul>
+    </aside>
+
+    <main class="content">
+
+      <!-- CONFIG FILE -->
+      <div class="section" id="config">
+        <h2>Config File Location</h2>
+        <p>MangoHud reads its config from:</p>
+        <pre><code>~/.config/MangoHud/MangoHud.conf</code></pre>
+        <p>If the file doesn't exist, create it. MangoHud picks it up on the next game launch.</p>
+        <p>For per-game configs, name the file after the game's executable:</p>
+        <pre><code>~/.config/MangoHud/<span class="hl-value">&lt;application_name&gt;</span>.conf</code></pre>
+        <div class="callout">
+          <div class="callout-label">Tip</div>
+          Find the executable name by checking the game's process while it's running: <code>ps aux | grep -i &lt;game&gt;</code>
+        </div>
+      </div>
+
+      <!-- SYNTAX -->
+      <div class="section" id="syntax">
+        <h2>Config Syntax</h2>
+        <p>One parameter per line. Boolean parameters are enabled just by listing them with no value. Parameters that take a value use <code>=</code>.</p>
+        <pre><code><span class="hl-param">fps</span>
+<span class="hl-param">gpu_stats</span>
+<span class="hl-key">font_size</span>=<span class="hl-value">20</span>
+<span class="hl-key">position</span>=<span class="hl-value">top-left</span></code></pre>
+        <p>Lines starting with <code>#</code> are comments.</p>
+      </div>
+
+      <!-- STARTER -->
+      <div class="section" id="starter">
+        <h2>Starter Config</h2>
+        <p>A minimal config that provides useful data without clutter:</p>
+        <pre><code><span class="hl-key">toggle_hud</span>=<span class="hl-value">Shift_R+F12</span>
+<span class="hl-param">fps</span>
+<span class="hl-param">gpu_stats</span>
+<span class="hl-param">gpu_temp</span>
+<span class="hl-param">cpu_stats</span>
+<span class="hl-param">cpu_temp</span>
+<span class="hl-param">ram</span>
+<span class="hl-key">position</span>=<span class="hl-value">top-left</span>
+<span class="hl-key">font_size</span>=<span class="hl-value">20</span>
+<span class="hl-key">background_alpha</span>=<span class="hl-value">0.4</span></code></pre>
+      </div>
+
+      <!-- DISPLAY -->
+      <div class="section" id="display">
+        <h2>Display Parameters</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parameter</th><th>Values</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>position</code></td><td><code>top-left</code>, <code>top-right</code>, <code>bottom-left</code>, <code>bottom-right</code></td><td>HUD position on screen</td></tr>
+              <tr><td><code>font_size</code></td><td>Integer (default: 24)</td><td>Text size in the overlay</td></tr>
+              <tr><td><code>background_alpha</code></td><td>0.0 to 1.0</td><td>Opacity of the background box</td></tr>
+              <tr><td><code>round_corners</code></td><td>Integer</td><td>Corner radius on the background box</td></tr>
+              <tr><td><code>no_display</code></td><td>(boolean)</td><td>Starts with HUD hidden; toggle on with keybind</td></tr>
+              <tr><td><code>text_color</code></td><td>Hex (e.g. <code>FFFFFF</code>)</td><td>Default text color</td></tr>
+              <tr><td><code>gpu_color</code></td><td>Hex</td><td>GPU stats text color</td></tr>
+              <tr><td><code>cpu_color</code></td><td>Hex</td><td>CPU stats text color</td></tr>
+              <tr><td><code>fps_color</code></td><td>Hex array</td><td>FPS text color (low, mid, high)</td></tr>
+              <tr><td><code>width</code></td><td>Integer</td><td>Fixed HUD width in pixels</td></tr>
+              <tr><td><code>table_columns</code></td><td>Integer</td><td>Number of columns for HUD layout</td></tr>
+              <tr><td><code>horizontal</code></td><td>(boolean)</td><td>Renders the HUD in a single horizontal line</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- METRICS -->
+      <div class="section" id="metrics">
+        <h2>Metric Parameters</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parameter</th><th>What It Shows</th></tr></thead>
+            <tbody>
+              <tr><td><code>fps</code></td><td>Framerate</td></tr>
+              <tr><td><code>frametime</code></td><td>Frame time graph</td></tr>
+              <tr><td><code>frame_timing</code></td><td>Detailed frame timing</td></tr>
+              <tr><td><code>gpu_stats</code></td><td>GPU usage percentage</td></tr>
+              <tr><td><code>gpu_temp</code></td><td>GPU temperature</td></tr>
+              <tr><td><code>gpu_core_clock</code></td><td>GPU clock speed</td></tr>
+              <tr><td><code>gpu_mem_clock</code></td><td>GPU memory clock speed</td></tr>
+              <tr><td><code>gpu_power</code></td><td>GPU power draw (watts)</td></tr>
+              <tr><td><code>gpu_fan</code></td><td>GPU fan speed</td></tr>
+              <tr><td><code>gpu_name</code></td><td>GPU model name</td></tr>
+              <tr><td><code>cpu_stats</code></td><td>CPU usage percentage</td></tr>
+              <tr><td><code>cpu_temp</code></td><td>CPU temperature</td></tr>
+              <tr><td><code>cpu_mhz</code></td><td>CPU clock speed</td></tr>
+              <tr><td><code>cpu_power</code></td><td>CPU power draw</td></tr>
+              <tr><td><code>core_load</code></td><td>Per-core CPU load</td></tr>
+              <tr><td><code>ram</code></td><td>RAM usage</td></tr>
+              <tr><td><code>vram</code></td><td>VRAM usage</td></tr>
+              <tr><td><code>swap</code></td><td>Swap usage</td></tr>
+              <tr><td><code>io_read</code> / <code>io_write</code></td><td>Disk I/O rates</td></tr>
+              <tr><td><code>wine</code></td><td>Wine/Proton version</td></tr>
+              <tr><td><code>gamemode</code></td><td>Whether Feral GameMode is active</td></tr>
+              <tr><td><code>vulkan_driver</code></td><td>Vulkan driver in use</td></tr>
+              <tr><td><code>engine_version</code></td><td>Game engine version</td></tr>
+              <tr><td><code>arch</code></td><td>32-bit or 64-bit</td></tr>
+              <tr><td><code>battery</code></td><td>Battery percentage and power draw</td></tr>
+              <tr><td><code>fps_limit</code></td><td>Display the current FPS limit</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- KEYBINDS -->
+      <div class="section" id="keybinds">
+        <h2>Keybinds</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parameter</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>toggle_hud</code></td><td><code>Shift_R+F12</code></td><td>Show/hide overlay</td></tr>
+              <tr><td><code>toggle_logging</code></td><td><code>Shift_L+F2</code></td><td>Start/stop logging</td></tr>
+              <tr><td><code>upload_log</code></td><td><code>Shift_L+F12</code></td><td>Upload log to FlightlessMango</td></tr>
+              <tr><td><code>reload_cfg</code></td><td><code>Shift_L+F4</code></td><td>Reload config without restarting</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Custom keybinds use the format <code>Modifier+Key</code>. Modifiers: <code>Shift_L</code>, <code>Shift_R</code>, <code>Control_L</code>, <code>Control_R</code>.</p>
+      </div>
+
+      <!-- FPS LIMIT -->
+      <div class="section" id="fps-limit">
+        <h2>FPS Limiting</h2>
+        <pre><code><span class="hl-key">fps_limit</span>=<span class="hl-value">60</span></code></pre>
+        <p>Multiple limits can be cycled through:</p>
+        <pre><code><span class="hl-key">fps_limit</span>=<span class="hl-value">30,60,120,0</span></code></pre>
+        <p>Where <code>0</code> means unlimited. Each press of the toggle cycles to the next value.</p>
+      </div>
+
+      <!-- LOGGING -->
+      <div class="section" id="logging">
+        <h2>Logging</h2>
+        <p>MangoHud can log performance data to CSV for later analysis.</p>
+        <pre><code><span class="hl-key">output_folder</span>=<span class="hl-value">/home/youruser/mangologs</span>
+<span class="hl-key">log_duration</span>=<span class="hl-value">60</span>
+<span class="hl-param">autostart_log</span></code></pre>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>output_folder</code></td><td>Directory where logs are saved</td></tr>
+              <tr><td><code>log_duration</code></td><td>Max log duration in seconds (0 = unlimited)</td></tr>
+              <tr><td><code>autostart_log</code></td><td>Begin logging immediately on launch</td></tr>
+              <tr><td><code>log_interval</code></td><td>Milliseconds between log entries (default: 100)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Logs can be uploaded to <a href="https://flightlessmango.com" target="_blank">flightlessmango.com</a> for visualization, or opened in any spreadsheet application.</p>
+      </div>
+
+      <!-- EXAMPLES -->
+      <div class="section" id="examples">
+        <h2>Example Configs</h2>
+
+        <h3>Minimal (FPS counter only)</h3>
+        <pre><code><span class="hl-key">toggle_hud</span>=<span class="hl-value">Shift_R+F12</span>
+<span class="hl-param">no_display</span>
+<span class="hl-param">fps</span>
+<span class="hl-key">position</span>=<span class="hl-value">top-right</span>
+<span class="hl-key">font_size</span>=<span class="hl-value">18</span>
+<span class="hl-key">background_alpha</span>=<span class="hl-value">0.3</span></code></pre>
+        <p>Starts hidden. Press <code>Shift_R+F12</code> to show a small FPS counter in the top right.</p>
+
+        <h3>Full Monitoring</h3>
+        <pre><code><span class="hl-key">toggle_hud</span>=<span class="hl-value">Shift_R+F12</span>
+<span class="hl-param">fps</span>
+<span class="hl-param">frametime</span>
+<span class="hl-param">gpu_stats</span>
+<span class="hl-param">gpu_temp</span>
+<span class="hl-param">gpu_core_clock</span>
+<span class="hl-param">gpu_mem_clock</span>
+<span class="hl-param">gpu_power</span>
+<span class="hl-param">gpu_fan</span>
+<span class="hl-param">cpu_stats</span>
+<span class="hl-param">cpu_temp</span>
+<span class="hl-param">cpu_mhz</span>
+<span class="hl-param">cpu_power</span>
+<span class="hl-param">core_load</span>
+<span class="hl-param">ram</span>
+<span class="hl-param">vram</span>
+<span class="hl-param">vulkan_driver</span>
+<span class="hl-param">wine</span>
+<span class="hl-key">position</span>=<span class="hl-value">top-left</span>
+<span class="hl-key">font_size</span>=<span class="hl-value">18</span>
+<span class="hl-key">background_alpha</span>=<span class="hl-value">0.5</span>
+<span class="hl-key">round_corners</span>=<span class="hl-value">5</span></code></pre>
+
+        <h3>Logging Session</h3>
+        <pre><code><span class="hl-key">toggle_hud</span>=<span class="hl-value">Shift_R+F12</span>
+<span class="hl-param">fps</span>
+<span class="hl-param">frametime</span>
+<span class="hl-param">gpu_stats</span>
+<span class="hl-param">gpu_temp</span>
+<span class="hl-param">cpu_stats</span>
+<span class="hl-param">cpu_temp</span>
+<span class="hl-param">ram</span>
+<span class="hl-param">vram</span>
+<span class="hl-key">output_folder</span>=<span class="hl-value">/home/youruser/mangologs</span>
+<span class="hl-key">log_duration</span>=<span class="hl-value">120</span>
+<span class="hl-param">autostart_log</span>
+<span class="hl-param">no_display</span></code></pre>
+        <p>Runs hidden, automatically logs 2 minutes of data on game launch.</p>
+      </div>
+
+      <!-- CUSTOM THEME -->
+      <div class="section" id="custom-theme">
+        <h2>Custom Theme</h2>
+        <p>A pre-built MangoHud config with custom colors and layout. Drop it into your config directory and adjust to taste.</p>
+        <div class="theme-card">
+          <h3>Junkyard Theme</h3>
+          <p>Custom MangoHud configuration with styled colors and curated metric selection. Download the config and copy it to <code>~/.config/MangoHud/MangoHud.conf</code>.</p>
+          <a class="btn" href="https://github.com/ihpsm/junkyard/blob/main/MangoHud.conf" target="_blank">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>
+            View on GitHub
+          </a>
+        </div>
+      </div>
+
+      <!-- APPLYING CHANGES -->
+      <div class="section" id="applying">
+        <h2>Applying Changes</h2>
+        <p>Three options:</p>
+        <p><strong>1.</strong> Press <code>Shift_L+F4</code> in game to reload the config file live.</p>
+        <p><strong>2.</strong> Restart the game.</p>
+        <p><strong>3.</strong> For Steam launch option changes, restart the game.</p>
+      </div>
+
+      <!-- TROUBLESHOOTING -->
+      <div class="section" id="troubleshooting">
+        <h2>Troubleshooting</h2>
+        <p>If MangoHud isn't appearing, confirm it's being invoked. Your Steam launch options should contain either <code>mangohud %command%</code> or <code>MANGOHUD=1 %command%</code>.</p>
+        <p>If the config file isn't being read, verify the path is exactly <code>~/.config/MangoHud/MangoHud.conf</code> (case sensitive).</p>
+        <div class="callout warning">
+          <div class="callout-label">Common Issue</div>
+          If you're using Flatpak Steam, MangoHud needs to be installed inside the Flatpak sandbox as well, or the overlay won't load.
+        </div>
+        <p>To verify MangoHud is loaded and reading your config, launch the game from a terminal and look for MangoHud output lines confirming the config path.</p>
+      </div>
+
+      <!-- REFERENCE -->
+      <div class="section" id="reference">
+        <h2>Reference</h2>
+        <p>Full parameter list and documentation: <a href="https://github.com/flightlessmango/MangoHud" target="_blank">github.com/flightlessmango/MangoHud</a></p>
+        <p>Example config with all options: typically located at <code>/usr/share/doc/mangohud/MangoHud.conf.example</code> or on the GitHub repo.</p>
+        <p>Man page: <code>man mangohud</code></p>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    MangoHud Configuration Guide
+  </footer>
+
+  <script>
+    // Active sidebar link tracking
+    const sections = document.querySelectorAll('.section');
+    const navLinks = document.querySelectorAll('.sidebar a');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(link => link.classList.remove('active'));
+          const id = entry.target.id;
+          const activeLink = document.querySelector(`.sidebar a[href="#${id}"]`);
+          if (activeLink) activeLink.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+
+    sections.forEach(section => observer.observe(section));
+  </script>
+
+</body>
+</html>
